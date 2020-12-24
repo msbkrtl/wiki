@@ -14,7 +14,4 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wiki.settings')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
-sys.path.append('/home/django_projects/wiki')
-sys.path.append('/home/django_projects/wiki/wiki')
-
 application = get_wsgi_application()
