@@ -1,0 +1,6 @@
+{% extends "encyclopedia/layout.html" %} {% block title %} Encyclopedia
+{%endblock %} {% block body %}
+
+<p class="resultFromSearchQuery">{{ entries | safe }}</p>
+
+{% endblock %}

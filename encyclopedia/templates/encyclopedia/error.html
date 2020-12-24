@@ -1,0 +1,13 @@
+{% extends "encyclopedia/layout.html" %} {% block title %} Error {%endblock%}
+{%block body %}
+<h1>Error!</h1>
+
+<h3>
+  <ul class="li">
+    <li>
+      There is already an entry named {{error}}, you can not create a entry with
+      the same name.
+    </li>
+  </ul>
+</h3>
+{% endblock %}

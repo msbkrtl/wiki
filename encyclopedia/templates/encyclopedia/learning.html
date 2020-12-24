@@ -1,0 +1,11 @@
+{% extends "encyclopedia/layout.html" %} {% block title %} Encyclopedia
+{%endblock %} {% block body %}
+<h1>PAGE FOR LEARNING</h1>
+
+<form action="" method="post">
+  <div class="asda" contenteditable="false">
+    {% autoescape off %} {{obj}} {% csrf_token %}{% endautoescape %}
+    <button type="submit">save</button>
+  </div>
+</form>
+{% endblock %}

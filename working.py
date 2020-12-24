@@ -1,0 +1,8 @@
+some_list = ['abc-123', 'def-456', 'ghi-789', 'abc-456']
+
+
+matching = [s for s in some_list if "abc" in s]
+
+
+print(matching) 
+

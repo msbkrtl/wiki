@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %} {% load markdown_deux_tags %} {% block title %} {{title}}
+{%endblock%} {% block body %}
+{% comment %}
+<div class="asda">{{content | safe }}</div>
+{% endcomment %}
+<div class="asda"input-group-text"" contenteditable="false">
+  
+  {% load md2 %} {{ content|markdown:" code-friendly, code-color"}}
+</div>
+<form action="" method="post">
+  {% csrf_token %}
+  <button class="btn btn-primary" type="submit" value="Edit Entry">
+    Edit Entry
+  </button>
+</form>
+{% endblock %}
