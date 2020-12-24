@@ -17,6 +17,7 @@ path_of_entries = os.path.join(os.getcwd(), "entries/")
 #     "/mnt/c/Users/krtl/Desktop/Programming/cs502019/Python/web/wiki/entries",
 #     filename,
 # )
+#
 register = template.Library()
 
 
