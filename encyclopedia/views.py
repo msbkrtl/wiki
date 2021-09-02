@@ -14,9 +14,7 @@ from markdown2 import Markdown
 from django.core.files.storage import default_storage
 import boto3
 import markdown as md
-s3 = boto3.resource('s3',
-         aws_access_key_id='AKIA3PLT7OMZIMIPLYHX',
-         aws_secret_access_key='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')
+s3 = boto3.resource('s3')
 my_bucket = s3.Bucket('wiki-msbkrtl')
 
 
