@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "%710m*zic)#0u((qugw#1@e^ty!c)9j04956v@ly(_86n$rg)h"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -123,3 +123,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+
+
+AWS_ACCESS_KEY_ID='AKIA3PLT7OMZIMIPLYHX'
+AWS_SECRET_ACCESS_KEY='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'
+
+AWS_STORAGE_BUCKET_NAME='wiki-msbkrtl'

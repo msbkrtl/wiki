@@ -11,8 +11,15 @@ from .modelform import RawProductForm
 import os.path, sys
 import random
 from markdown2 import Markdown
+from django.core.files.storage import default_storage
+import boto3
+s3 = boto3.resource('s3',
+         aws_access_key_id='AKIA3PLT7OMZIMIPLYHX',
+         aws_secret_access_key='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')
+my_bucket = s3.Bucket('wiki-msbkrtl')
 
-path_of_entries = os.path.join(os.getcwd(), "entries/")
+
+
 # filepath = os.path.join(
 #     "/mnt/c/Users/krtl/Desktop/Programming/cs502019/Python/web/wiki/entries",
 #     filename,
@@ -22,6 +29,14 @@ register = template.Library()
 
 
 def index(request):
+    # print(dir(my_bucket.objects.all()))
+    # print(my_bucket.objects.all().all)
+    # print(dir(default_storage))
+    # print(dir(default_storage.path))
+    # print(default_storage.path)
+
+    # print(file.read())
+    # print(s3)
     # print(
     #     os.path.join(
     #         "/mnt/c/Users/krtl/Desktop/Programming/cs502019/Python/web/wiki/entries",
@@ -30,7 +45,11 @@ def index(request):
     # )
     newList = []
     partial_List = []
-    pageList = util.list_entries()  # names of all entries
+    # pageList = util.list_entries()  # names of all entries
+    pageList =[]
+    for my_bucket_object in my_bucket.objects.all():
+        pageList.append(str(my_bucket_object.key.split(".")[0]))
+    print(pageList)
     query = str(request.GET.get("q"))
     if query != "None":
         if query != "":
@@ -44,6 +63,8 @@ def index(request):
             for i in range(len(newList)):
                 newList[i] = markdown(util.get_entry(newList[i]))
                 string = newList[0]
+            print(newList)
+            print(partial_List)
             if newList:
                 return render(
                     request,
@@ -79,12 +100,13 @@ def wiki(request, title):
     if request.method == "POST":
         print("AAAAAAAA")
         return redirect(reverse(edit, args=[title]))
+    print(my_bucket.Object(f'{title}.md').get()["Body"].read())
     return render(
         request,
         "encyclopedia/entry.html",
         {
             "title": title,
-            "content": util.get_entry(title),
+            "content":  my_bucket.Object(f'{title}.md').get()["Body"].read()
         },
     )
 
@@ -95,7 +117,6 @@ def new(request):
     if query != "None" and query != "":
         return redirect(reverse("index") + "?q=" + query)
     form = newEntryForm()
-
     if request.method == "POST":
         form = newEntryForm(request.POST)
         if form.is_valid():
@@ -104,9 +125,8 @@ def new(request):
             entryList = util.list_entries()
             if title in entryList:
                 return redirect(reverse(error, args=[title]))
-            with open(path_of_entries + f"{title}.md", "a+") as file:
-                file.write(f"#{title}\n{text}")
-                print(file.read())
+            file = my_bucket.Object(f'{title}.md').put(Body=f"#{title}\n{text}")
+
             return redirect(reverse(wiki, args=[title]))
     return render(request, "encyclopedia/newEntry.html", {"form": form})
 
@@ -118,23 +138,34 @@ def edit(request, entry):
     query = str(request.GET.get("q"))
     if query != "None" and query != "":
         return redirect(reverse("index") + "?q=" + query)
-    with open(path_of_entries + f"{entry}.md", "a+") as file:
+    # print(dir(default_storage.open(f"{entry}.md")))
+    # print(dir(default_storage.open(f"{entry}.md").read))
+    # print(dir(my_bucket.Object(f'{entry}.md').get()["Body"].read()))
+    test = my_bucket.Object(f'{entry}.md').get()["Body"].read().decode('utf-8')
+    # file = default_storage.open(f"{entry}.md").read()
+    with open("temp.txt","w+") as file:
+
+        file.write(test)
         file.seek(0)
+        # print(file.read())
         form = newEntryForm(
-            initial={
-                "entryName": file.readline().rstrip().strip("#"),
-                "priority": file.read(),
-            }
-        )
+        initial={
+            "entryName": file.readline().rstrip().strip("#"),
+            "priority": file.read(),
+        }
+    )
+    # my_bucket.Object(f'{title}.md').put(Body=f"#{title}\n{text}")
+    # print(test)
+    # test = str(test)
+    # print(type(str(test)))
+
     if request.method == "POST":
         form = newEntryForm(request.POST)
         if form.is_valid():
             entry = form.cleaned_data["entryName".lstrip("#")]
             text = form.cleaned_data["priority"]
             entryList = util.list_entries()
-            with open(path_of_entries + f"{entry}.md", "w+") as file:
-                file.write(f"#{entry}\n{text}")
-                print(file.read())
+            my_bucket.Object(f'{entry}.md').put(Body=f"#{entry}\n{text}")
             return redirect(reverse(wiki, args=[entry]))
     return render(request, "encyclopedia/edit.html", {"form": form})
     # path_of_entries = os.path.join(os.getcwd(), "entries/")
@@ -158,8 +189,9 @@ def randomPage(request):
     query = str(request.GET.get("q"))
     if query != "None" and query != "":
         return redirect(reverse("index") + "?q=" + query)
-    pageList = util.list_entries()
-    print(len(pageList))
+    pageList =[]
+    for my_bucket_object in my_bucket.objects.all():
+        pageList.append(str(my_bucket_object.key.split(".")[0]))
     randm = random.randint(0, (len(pageList) - 1))
     print(randm)
     return redirect("wiki/" + pageList[randm])
@@ -173,8 +205,6 @@ def randomPage(request):
     #     else:
     #         print(my_form.errors)
     # return render(request, "encyclopedia/random.html")
-
-
 def error(request, errorName=""):
     query = str(request.GET.get("q"))
     if query != "None" and query != "":
