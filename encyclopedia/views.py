@@ -144,16 +144,16 @@ def edit(request, entry):
     test = my_bucket.Object(f'{entry}.md').get()["Body"].read().decode('utf-8')
     # file = default_storage.open(f"{entry}.md").read()
     with open("temp.txt","w+") as file:
-
         file.write(test)
         file.seek(0)
         # print(file.read())
-        form = newEntryForm(
-        initial={
-            "entryName": file.readline().rstrip().strip("#"),
-            "priority": file.read(),
-        }
-    )
+            form = newEntryForm(
+            initial={
+                "entryName": file.readline().rstrip().strip("#"),
+                "priority": file.read(),
+            }
+        )
+    os.remove("temp.txt")
     # my_bucket.Object(f'{title}.md').put(Body=f"#{title}\n{text}")
     # print(test)
     # test = str(test)
