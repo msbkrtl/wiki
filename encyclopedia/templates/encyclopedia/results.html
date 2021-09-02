@@ -1,6 +1,12 @@
 {% extends "encyclopedia/layout.html" %} {% block title %} Encyclopedia
 {%endblock %} {% block body %}
 
-<p class="resultFromSearchQuery">{{ entries | safe }}</p>
+{% load md2 %}
+{% if entries %}<p class="resultFromSearchQuery"> {{entries |markdown:" code-friendly, code-color"}} </p> {% else %} <h1>No result!</h1>{% endif %}
+
+  {% comment %} {% load md2 %} {{ entries |markdown:"code-friendly, code-color"}} {% endcomment %}
+ {% comment %} {% load md2 %} {{ newList |markdown:" code-friendly, code-color"}}
+  {% load md2 %} {{ query |markdown:" code-friendly, code-color"}} {% endcomment %}
+
 
 {% endblock %}

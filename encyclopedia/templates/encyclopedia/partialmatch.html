@@ -1,6 +1,6 @@
 {% extends "encyclopedia/layout.html" %} {% block title %} Encyclopedia {%endblock %} {% block body %}
 
-<h1>Closest results to "{{query}}" query:</h1>
+<h1>Closest results to "{{query}}"</h1>
 <ul>
   {% for entry in entries %}
   <li><a href="/wiki/{{entry}}">{{ entry}}</a></li>

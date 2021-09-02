@@ -13,6 +13,7 @@ import random
 from markdown2 import Markdown
 from django.core.files.storage import default_storage
 import boto3
+import markdown as md
 s3 = boto3.resource('s3',
          aws_access_key_id='AKIA3PLT7OMZIMIPLYHX',
          aws_secret_access_key='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')
@@ -49,11 +50,10 @@ def index(request):
     pageList =[]
     for my_bucket_object in my_bucket.objects.all():
         pageList.append(str(my_bucket_object.key.split(".")[0]))
-    print(pageList)
     query = str(request.GET.get("q"))
     if query != "None":
         if query != "":
-            print("AAAA")
+
             for i in range(len(pageList)):
                 if query.lower() in pageList[i].lower():
                     if query.lower() == pageList[i].lower():
@@ -61,10 +61,9 @@ def index(request):
                     else:
                         partial_List.append(pageList[i])
             for i in range(len(newList)):
-                newList[i] = markdown(util.get_entry(newList[i]))
+                newList[i] =  my_bucket.Object(f'{newList[i]}.md').get()["Body"].read()
                 string = newList[0]
-            print(newList)
-            print(partial_List)
+
             if newList:
                 return render(
                     request,
@@ -72,7 +71,7 @@ def index(request):
                     {"entries": string, "query": query, "newList": newList},
                 )
             else:
-                if pageList:
+                if partial_List:
                     return render(
                         request,
                         "encyclopedia/partialmatch.html",
@@ -81,8 +80,8 @@ def index(request):
                 else:
                     return render(
                         request,
-                        "encyclopedia/index.html",
-                        {"entries": pageList, "query": query},
+                        "encyclopedia/results.html",
+                        {"entries": partial_List, "query": query},
                     )
     else:
         return render(
@@ -96,11 +95,9 @@ def wiki(request, title):
     query = str(request.GET.get("q"))
     if query != "None" and query != "":
         return redirect(reverse("index") + "?q=" + query)
-    markdowner = Markdown()
     if request.method == "POST":
-        print("AAAAAAAA")
+
         return redirect(reverse(edit, args=[title]))
-    print(my_bucket.Object(f'{title}.md').get()["Body"].read())
     return render(
         request,
         "encyclopedia/entry.html",
@@ -193,7 +190,6 @@ def randomPage(request):
     for my_bucket_object in my_bucket.objects.all():
         pageList.append(str(my_bucket_object.key.split(".")[0]))
     randm = random.randint(0, (len(pageList) - 1))
-    print(randm)
     return redirect("wiki/" + pageList[randm])
     # return redirect(reverse("wiki") + "?q=" + query)
     # if request.method == "POST":
